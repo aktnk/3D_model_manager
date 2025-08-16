@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Viewer</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #111; color: white; font-family: sans-serif; }
+        canvas { display: block; }
+        #info-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            pointer-events: none; /* Allow clicking through the container */
+        }
+        #back-btn {
+            padding: 10px 15px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            pointer-events: auto; /* Make the button clickable */
+            flex-shrink: 0; /* Prevent the button from shrinking */
+        }
+        #model-title {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 1.5em;
+            text-shadow: 1px 1px 2px black;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="info-container">
+        <a href="/" id="back-btn">戻る</a>
+        <h1 id="model-title">Loading...</h1>
+    </div>
+    
+    <!-- Three.js library -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module" src="/js/viewer.js"></script>
+</body>
+</html>

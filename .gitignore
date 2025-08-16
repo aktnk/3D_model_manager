@@ -1,0 +1,14 @@
+
+# Dependencies
+/node_modules
+
+# Data, Logs, and Uploads
+/3d_models.sqlite
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Exclude all files in the models directory...
+/public/models/*
+# ...but keep the directory structure by not ignoring .gitkeep
+!/public/models/.gitkeep

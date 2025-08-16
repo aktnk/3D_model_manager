@@ -33,7 +33,7 @@ This project was bootstrapped and developed with the assistance of Google's Gemi
 2. **Navigate to the project directory:**
 
    ```sh
-   cd your-repository-name
+   cd 3D_model_mannager
    ```
 
 3. **Install dependencies:**

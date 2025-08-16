@@ -1,4 +1,3 @@
-
 # 3D Model Manager
 
 A simple web application for uploading, managing, and viewing 3D models, built with Node.js, Express, and Three.js.
@@ -26,11 +25,13 @@ This project was bootstrapped and developed with the assistance of Google's Gemi
 ## Setup & Installation
 
 1. **Clone the repository:**
+
    ```sh
-   git clone https://github.com/your-username/your-repository-name.git
+   git clone https://github.com/aktnk/3D_model_manager.git
    ```
 
 2. **Navigate to the project directory:**
+
    ```sh
    cd your-repository-name
    ```
@@ -43,6 +44,7 @@ This project was bootstrapped and developed with the assistance of Google's Gemi
 ## Usage
 
 1. **Start the server:**
+
    ```sh
    node server.js
    ```

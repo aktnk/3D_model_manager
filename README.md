@@ -52,6 +52,9 @@ This project was bootstrapped and developed with the assistance of Google's Gemi
 2. **Open the application:**
    Open your web browser and navigate to `http://localhost:3000`.
 
+   ![image of index.html](sample/index.png)
+   ![image of viewer.html](sample/viewer.png)
+
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.

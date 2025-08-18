@@ -35,11 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td>${model.original_name}</td>
                         <td>${createdAt}</td>
                         <td>${updatedAt}</td>
-                        <td class="actions">
-                            <button class="view-btn" data-id="${model.id}" data-path="${model.file_path}" data-title="${encodeURIComponent(currentTitle)}">表示</button>
-                            <button class="model-update-btn" data-id="${model.id}">モデル更新</button>
-                            <button class="title-update-btn" data-id="${model.id}" data-title="${currentTitle}">タイトル更新</button>
-                            <button class="delete-btn" data-id="${model.id}">削除</button>
+                        <td class="action-buttons">
+                            <button class="view-btn btn btn-sm btn-info" data-id="${model.id}" data-path="${model.file_path}" data-title="${encodeURIComponent(currentTitle)}">表示</button>
+                            <button class="model-update-btn btn btn-sm btn-warning" data-id="${model.id}">モデル更新</button>
+                            <button class="title-update-btn btn btn-sm btn-secondary" data-id="${model.id}" data-title="${currentTitle}">タイトル更新</button>
+                            <button class="delete-btn btn btn-sm btn-danger" data-id="${model.id}">削除</button>
                         </td>
                     `;
                     modelsTableBody.appendChild(row);

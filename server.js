@@ -9,6 +9,7 @@ const port = 3000;
 
 // --- Middleware ---
 app.use(express.static('public'));
+app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 app.use(express.json());
 
 // --- Multer Setup for File Uploads ---

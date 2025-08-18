@@ -4,20 +4,20 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // --- DOM Elements ---
 const titleElement = document.getElementById('model-title');
+const viewerContainer = document.getElementById('viewer-container');
 
 // --- Scene Setup ---
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x222222);
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(75, viewerContainer.clientWidth / viewerContainer.clientHeight, 0.1, 1000);
 camera.position.z = 5;
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(viewerContainer.clientWidth, viewerContainer.clientHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1;
-document.body.appendChild(renderer.domElement);
+viewerContainer.appendChild(renderer.domElement);
 
 // --- Lighting ---
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
@@ -84,7 +84,7 @@ animate();
 
 // --- Handle Window Resize ---
 window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = viewerContainer.clientWidth / viewerContainer.clientHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(viewerContainer.clientWidth, viewerContainer.clientHeight);
 });

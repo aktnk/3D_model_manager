@@ -22,38 +22,49 @@ This project was bootstrapped and developed with the assistance of Google's Gemi
 - **File Uploads**: Multer
 - **3D Rendering**: Three.js
 
-## Setup & Installation
+## Getting Started with Docker
 
-1. **Clone the repository:**
+This project is configured to run in a Docker container, which provides a consistent and isolated development environment.
 
-   ```sh
-   git clone https://github.com/aktnk/3D_model_manager.git
-   ```
+### Prerequisites
 
-2. **Navigate to the project directory:**
+*   [Docker](https://www.docker.com/)
+*   [Docker Compose](https://docs.docker.com/compose/install/)
 
-   ```sh
-   cd 3D_model_mannager
-   ```
+### Running the Application
 
-3. **Install dependencies:**
-   ```sh
-   npm install
-   ```
+1.  **Clone the repository:**
+    ```sh
+    git clone https://github.com/aktnk/3D_model_manager.git
+    cd 3D_model_manager
+    ```
 
-## Usage
+2.  **Build and start the container:**
+    Run the following command from the project's root directory. This will build the Docker image and start the application in the background.
+    ```bash
+    docker compose up -d --build
+    ```
 
-1. **Start the server:**
+3.  **Open the application:**
+    Once the container is running, open your web browser and navigate to:
+    [http://localhost:3000](http://localhost:3000)
 
-   ```sh
-   node server.js
-   ```
+    You should now see the application's main page.
 
-2. **Open the application:**
-   Open your web browser and navigate to `http://localhost:3000`.
+    ![image of index.html](sample/index.png)
+    ![image of viewer.html](sample/viewer.png)
 
-   ![image of index.html](sample/index.png)
-   ![image of viewer.html](sample/viewer.png)
+### Development
+
+*   **Live Reloading**: Thanks to the volume mount configured in `compose.yml`, any changes you make to the source code on your local machine will be immediately reflected in the container.
+*   **Viewing Logs**: To see the application logs in real-time, use the command:
+    ```bash
+    docker compose logs -f
+    ```
+*   **Stopping the Application**: To stop and remove the containers, run:
+    ```bash
+    docker compose down
+    ```
 
 ## License
 

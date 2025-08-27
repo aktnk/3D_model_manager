@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Viewer</title>
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        model-viewer {
+            width: 100%;
+            height: 100%;
+            --ar-button-display: none; /* ARボタンはmodel-viewerが自動で表示 */
+        }
+        .ar-instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            background-color: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+    <!-- Import the model-viewer component -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+</head>
+<body class="bg-dark">
+
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container-fluid">
+            <a href="/" class="btn btn-secondary me-3">戻る</a>
+            <span class="navbar-brand mb-0 h1" id="model-title">Loading...</span>
+        </div>
+    </nav>
+
+    <model-viewer id="ar-viewer"
+                  src=""
+                  alt="A 3D model"
+                  ar
+                  ar-modes="webxr scene-viewer quick-look"
+                  camera-controls
+                  auto-rotate>
+        <div class="ar-instructions">
+            お使いのデバイスでARがサポートされている場合、右下にARアイコンが表示されます
+        </div>
+    </model-viewer>
+
+    <script src="/js/ar-viewer.js"></script>
+</body>
+</html>

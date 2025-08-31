@@ -4,6 +4,7 @@
 
 # Data, Logs, and Uploads
 /3d_models.sqlite
+/certs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

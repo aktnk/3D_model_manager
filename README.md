@@ -54,6 +54,22 @@ This project is configured to run in a Docker container, which provides a consis
     ![image of index.html](sample/index.png)
     ![image of viewer.html](sample/viewer.png)
 
+### HTTPS for Local Development (for AR Testing)
+
+To test the AR (Augmented Reality) functionality on a physical device, you must serve the application over HTTPS, as most browsers require a secure context for WebXR features.
+
+1.  **Generate a self-signed certificate:**
+    If you haven't already, run the following command in the project root. It will create a `certs` directory with a certificate and a private key.
+    ```bash
+    openssl req -x509 -newkey rsa:2048 -nodes -keyout certs/server.key -out certs/server.crt -days 365 -subj "/C=JP/ST=Tokyo/L=Tokyo/O=Dev/CN=localhost"
+    ```
+    These files are configured to be ignored by Git.
+
+2.  **Access the application via HTTPS:**
+    After starting the application, navigate to [https://localhost:3000](https://localhost:3000).
+
+    Your browser will likely show a privacy warning because the certificate is self-signed. You must bypass this warning to proceed (look for an "Advanced" button and an option like "Proceed to localhost").
+
 ### Development
 
 *   **Live Reloading**: Thanks to the volume mount configured in `compose.yml`, any changes you make to the source code on your local machine will be immediately reflected in the container.

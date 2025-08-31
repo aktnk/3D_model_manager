@@ -1,11 +1,18 @@
-
 const express = require('express');
+const https = require('https');
+const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
 const db = require('./database.js');
 
 const app = express();
 const port = 3000;
+
+// --- HTTPS Options ---
+const httpsOptions = {
+    key: fs.readFileSync(path.join(__dirname, 'certs/server.key')),
+    cert: fs.readFileSync(path.join(__dirname, 'certs/server.crt'))
+};
 
 // --- Middleware ---
 app.use(express.static('public'));
@@ -49,21 +56,40 @@ app.get('/api/models', (req, res) => {
     });
 });
 
+// GET a single model by ID
+app.get('/api/models/:id', (req, res) => {
+    const { id } = req.params;
+    db.get("SELECT * FROM models WHERE id = ? AND is_deleted = 0", [id], (err, row) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (!row) {
+            res.status(404).json({ error: 'Model not found' });
+            return;
+        }
+        res.json({ model: row });
+    });
+});
+
+
 // POST a new model
 app.post('/api/models', upload.single('modelFile'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded.' });
     }
     const { title } = req.body;
-    const { originalname, path: filePath } = req.file;
-    const relativePath = path.relative('public', filePath);
+    const { originalname } = req.file;
+    // store path relative to public dir
+    const relativePath = path.join('models', req.file.filename);
+
 
     if (!title) {
         // This is a server-side validation, though the client should also prevent this.
         return res.status(400).json({ error: 'Title is required.' });
     }
 
-    db.run(`INSERT INTO models (title, original_name, file_path) VALUES (?, ?, ?)`, [title, originalname, relativePath], function(err) {
+    db.run(`INSERT INTO models (title, original_name, file_path, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)`, [title, originalname, relativePath], function(err) {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -71,14 +97,14 @@ app.post('/api/models', upload.single('modelFile'), (req, res) => {
     });
 });
 
-// POST (update) an existing model
-app.post('/api/models/:id', upload.single('modelFile'), (req, res) => {
+// POST (update) an existing model's file
+app.post('/api/models/:id/file', upload.single('modelFile'), (req, res) => {
     const { id } = req.params;
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded for update.' });
     }
-    const { originalname, path: filePath } = req.file;
-    const relativePath = path.relative('public', filePath);
+    const { originalname } = req.file;
+    const relativePath = path.join('models', req.file.filename);
 
     db.run(`UPDATE models SET original_name = ?, file_path = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`, [originalname, relativePath, id], function(err) {
         if (err) {
@@ -112,7 +138,7 @@ app.put('/api/models/:id/title', (req, res) => {
 // DELETE a model (soft delete)
 app.delete('/api/models/:id', (req, res) => {
     const { id } = req.params;
-    db.run(`UPDATE models SET is_deleted = 1 WHERE id = ?`, [id], function(err) {
+    db.run(`UPDATE models SET is_deleted = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?`, [id], function(err) {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -124,6 +150,6 @@ app.delete('/api/models/:id', (req, res) => {
 });
 
 // --- Server Start ---
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`)
+https.createServer(httpsOptions, app).listen(port, () => {
+    console.log(`Server running at https://localhost:${port}`);
 });

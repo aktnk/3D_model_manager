@@ -58,6 +58,7 @@ This project is configured to run in a Docker container, providing a consistent 
 
     ![image of index.html](sample/index.png)
     ![image of viewer.html](sample/viewer.png)
+    ![image of ar_viewer.html](sample/ar_viewer.png)
 
 ### Development
 

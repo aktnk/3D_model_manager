@@ -6,28 +6,17 @@
     <title>AR Viewer</title>
     <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-        model-viewer {
-            width: 100%;
-            height: 100%;
-            --ar-button-display: none; /* ARボタンはmodel-viewerが自動で表示 */
-        }
-        .ar-instructions {
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+        model-viewer { width: 100%; height: 100%; }
+        /* Custom AR button style */
+        #custom-ar-button {
             position: absolute;
             bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            background-color: rgba(0,0,0,0.5);
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
+            right: 20px;
+            display: none; /* Initially hidden */
+            font-size: 1.2rem;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
         }
     </style>
     <!-- Import the model-viewer component -->
@@ -49,10 +38,10 @@
                   ar-modes="webxr scene-viewer quick-look"
                   camera-controls
                   auto-rotate>
-        <div class="ar-instructions">
-            お使いのデバイスでARがサポートされている場合、右下にARアイコンが表示されます
-        </div>
     </model-viewer>
+
+    <!-- Custom AR Button -->
+    <button id="custom-ar-button" class="btn btn-light">ARで表示</button>
 
     <script src="/js/ar-viewer.js"></script>
 </body>

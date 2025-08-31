@@ -1,86 +1,81 @@
 # 3D Model Manager
 
-A simple web application for uploading, managing, and viewing 3D models, built with Node.js, Express, and Three.js.
-
-This project was bootstrapped and developed with the assistance of Google's Gemini.
+A simple web application for uploading, managing, and viewing 3D models, built with Node.js, Express, and Three.js. This project was bootstrapped and developed with the assistance of Google's Gemini.
 
 ## Features
 
 - **Model Upload**: Upload 3D models in `.glb` and `.gltf` formats.
-- **List View**: Displays all registered models in a clean, sortable table with details like title, filename, and timestamps.
-- **Interactive 3D Viewer**: View models in an interactive WebGL canvas. Rotate, pan, and zoom with mouse controls.
-- **CRUD Operations**: Full Create, Read, Update, and Delete functionality for models.
-  - **Granular Updates**: Update the 3D model file and its title independently.
+- **Cross-Platform AR**: View your models in Augmented Reality directly in the browser on both Android (WebXR) and iOS (AR Quick Look). Requires a compatible mobile device.
+- **USDZ Support**: Upload a `.usdz` file for each model to ensure a stable and high-quality AR experience on iOS devices.
+- **Interactive 3D Viewer**: View models in an interactive WebGL canvas powered by Three.js. Rotate, pan, and zoom with mouse controls.
+- **Full CRUD Operations**: Create, Read, Update, and Delete models.
+  - **Granular Updates**: Independently update the main model file (`.glb`), the AR model file (`.usdz`), and the title.
   - **Soft Deletes**: Models are marked as deleted without being permanently removed from the database.
 - **Title Search**: Quickly find models by searching for their titles.
-- **Timestamp Tracking**: Automatically records and displays creation (`Created At`) and modification (`Updated At`) times in JST.
 
 ## Tech Stack
 
 - **Backend**: Node.js, Express.js
 - **Database**: SQLite
 - **File Uploads**: Multer
-- **3D Rendering**: Three.js
+- **3D Rendering**: Three.js, `<model-viewer>`
 
 ## Getting Started with Docker
 
-This project is configured to run in a Docker container, which provides a consistent and isolated development environment.
+This project is configured to run in a Docker container, providing a consistent and isolated development environment.
 
 ### Prerequisites
 
-*   [Docker](https://www.docker.com/)
-*   [Docker Compose](https://docs.docker.com/compose/install/)
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
 
-### Running the Application
+### Setup and Running the Application
 
 1.  **Clone the repository:**
+
     ```sh
     git clone https://github.com/aktnk/3D_model_manager.git
     cd 3D_model_manager
     ```
 
-2.  **Build and start the container:**
-    Run the following command from the project's root directory. This will build the Docker image and start the application in the background.
+2.  **Generate SSL Certificate for HTTPS:**
+    To test the AR functionality, a secure (HTTPS) connection is required. Generate a self-signed certificate by running the following command in the project root.
+
+    ```bash
+    openssl req -x509 -newkey rsa:2048 -nodes -keyout certs/server.key -out certs/server.crt -days 365 -subj "/C=JP/ST=Tokyo/L=Tokyo/O=Dev/CN=localhost"
+    ```
+
+    **Note:** If you need to test from a mobile device, replace `CN=localhost` with your computer's local IP address (e.g., `CN=192.168.1.10`).
+
+3.  **Build and start the container:**
+
     ```bash
     docker compose up -d --build
     ```
 
-3.  **Open the application:**
-    Once the container is running, open your web browser and navigate to:
-    [http://localhost:3000](http://localhost:3000)
-
-    You should now see the application's main page.
+4.  **Open the application:**
+    Navigate to [https://localhost:3000](https://localhost:3000). Your browser will show a privacy warning; you must accept it to proceed.
 
     ![image of index.html](sample/index.png)
     ![image of viewer.html](sample/viewer.png)
-
-### HTTPS for Local Development (for AR Testing)
-
-To test the AR (Augmented Reality) functionality on a physical device, you must serve the application over HTTPS, as most browsers require a secure context for WebXR features.
-
-1.  **Generate a self-signed certificate:**
-    If you haven't already, run the following command in the project root. It will create a `certs` directory with a certificate and a private key.
-    ```bash
-    openssl req -x509 -newkey rsa:2048 -nodes -keyout certs/server.key -out certs/server.crt -days 365 -subj "/C=JP/ST=Tokyo/L=Tokyo/O=Dev/CN=localhost"
-    ```
-    These files are configured to be ignored by Git.
-
-2.  **Access the application via HTTPS:**
-    After starting the application, navigate to [https://localhost:3000](https://localhost:3000).
-
-    Your browser will likely show a privacy warning because the certificate is self-signed. You must bypass this warning to proceed (look for an "Advanced" button and an option like "Proceed to localhost").
+    ![image of ar_viewer.html](sample/ar_viewer.png)
 
 ### Development
 
-*   **Live Reloading**: Thanks to the volume mount configured in `compose.yml`, any changes you make to the source code on your local machine will be immediately reflected in the container.
-*   **Viewing Logs**: To see the application logs in real-time, use the command:
-    ```bash
-    docker compose logs -f
-    ```
-*   **Stopping the Application**: To stop and remove the containers, run:
-    ```bash
-    docker compose down
-    ```
+- **Live Reloading**: Changes to the source code are immediately reflected in the container.
+- **Viewing Logs**: `docker compose logs -f`
+- **Stopping the Application**: `docker compose down`
+
+## Troubleshooting
+
+### AR feature is not working or the icon doesn't appear
+
+If you have trouble viewing a model in AR, please check the following:
+
+1.  **Are you using HTTPS?** The AR feature will not work over an insecure HTTP connection.
+2.  **Is your device compatible?** Your phone must support ARCore (Android) or ARKit (iOS).
+3.  **Is the model file size optimized?** For best performance on mobile devices, model files should ideally be under 5MB. Very large models may fail to load in AR.
+4.  **(For iOS) Is there a `.usdz` file?** While not always required, providing a `.usdz` version of your model is the most reliable way to ensure AR works on iPhones and iPads.
 
 ## License
 
@@ -94,3 +89,4 @@ The following third-party libraries are used in this project. They are all licen
 - [Multer](https://github.com/expressjs/multer)
 - [SQLite3](https://github.com/TryGhost/node-sqlite3)
 - [Three.js](https://threejs.org/)
+- [\<model-viewer\>](https://modelviewer.dev/)

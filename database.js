@@ -17,6 +17,7 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
             title TEXT,
             original_name TEXT NOT NULL,
             file_path TEXT NOT NULL,
+            usdz_path TEXT, -- Add usdz_path column
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT NULL,
             is_deleted INTEGER DEFAULT 0
@@ -46,6 +47,14 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
                     console.log('Adding "updated_at" column to models table.');
                     db.run("ALTER TABLE models ADD COLUMN updated_at DATETIME DEFAULT NULL", (err) => {
                         if (err) return console.error("Error adding updated_at column", err.message);
+                    });
+                }
+
+                // Check for 'usdz_path' column
+                if (!columnNames.includes('usdz_path')) {
+                    console.log('Adding "usdz_path" column to models table.');
+                    db.run("ALTER TABLE models ADD COLUMN usdz_path TEXT", (err) => {
+                        if (err) return console.error("Error adding usdz_path column", err.message);
                     });
                 }
             });

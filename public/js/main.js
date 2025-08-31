@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const newModelBtn = document.getElementById("new-model-btn");
   const newModelInput = document.getElementById("new-model-input");
   const updateModelInput = document.getElementById("update-model-input");
+  const updateUsdzInput = document.getElementById("update-usdz-input"); // Added
   const searchInput = document.getElementById("search-input");
   const searchBtn = document.getElementById("search-btn");
   const clearSearchBtn = document.getElementById("clear-search-btn");
@@ -36,45 +37,38 @@ document.addEventListener("DOMContentLoaded", () => {
                 timeZoneOptions
               )
             : "N/A";
+          
+          // Added for USDZ status
+          const usdzStatus = model.usdz_path
+            ? `<span class="badge bg-success">あり</span>`
+            : `<span class="badge bg-secondary">なし</span>`;
 
           row.innerHTML = `
-                        <td>${model.id}</td>
-                        <td>${model.title || "N/A"}</td>
-                        <td>${model.original_name}</td>
-                        <td>${createdAt}</td>
-                        <td>${updatedAt}</td>
-                        <td class="action-buttons">
-                            <button class="view-btn btn btn-sm btn-info" data-id="${
-                              model.id
-                            }" data-path="${
-            model.file_path
-          }" data-title="${encodeURIComponent(currentTitle)}">表示</button>
-                            <button class="ar-btn btn btn-sm btn-light" data-id="${
-                              model.id
-                            }" data-path="${
-            model.file_path
-          }" data-title="${encodeURIComponent(currentTitle)}">AR表示</button>
-                            <button class="model-update-btn btn btn-sm btn-warning" data-id="${
-                              model.id
-                            }">モデル更新</button>
-                            <button class="title-update-btn btn btn-sm btn-secondary" data-id="${
-                              model.id
-                            }" data-title="${currentTitle}">タイトル更新</button>
-                            <button class="delete-btn btn btn-sm btn-danger" data-id="${
-                              model.id
-                            }">削除</button>
-                        </td>
-                    `;
+            <td>${model.id}</td>
+            <td>${model.title || "N/A"}</td>
+            <td>${model.original_name}</td>
+            <td>${createdAt}</td>
+            <td>${updatedAt}</td>
+            <td>${usdzStatus}</td>
+            <td class="action-buttons">
+                <button class="view-btn btn btn-sm btn-info" data-id="${model.id}" data-path="${model.file_path}" data-title="${encodeURIComponent(currentTitle)}">表示</button>
+                <button class="ar-btn btn btn-sm btn-light" data-id="${model.id}">AR</button>
+                <button class="model-update-btn btn btn-sm btn-warning" data-id="${model.id}">モデル更新</button>
+                <button class="usdz-update-btn btn btn-sm btn-primary" data-id="${model.id}">USDZ更新</button>
+                <button class="title-update-btn btn btn-sm btn-secondary" data-id="${model.id}" data-title="${currentTitle}">タイトル更新</button>
+                <button class="delete-btn btn btn-sm btn-danger" data-id="${model.id}">削除</button>
+            </td>
+          `;
           modelsTableBody.appendChild(row);
         });
       } else {
         modelsTableBody.innerHTML =
-          '<tr><td colspan="6" style="text-align: center;">No models found.</td></tr>';
+          '<tr><td colspan="7" style="text-align: center;">No models found.</td></tr>';
       }
     } catch (error) {
       console.error("Failed to fetch models:", error);
       modelsTableBody.innerHTML =
-        '<tr><td colspan="6" style="text-align: center;">Error loading models.</td></tr>';
+        '<tr><td colspan="7" style="text-align: center;">Error loading models.</td></tr>';
     }
   };
 
@@ -115,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const formData = new FormData();
     formData.append("modelFile", file);
     try {
-      const response = await fetch(`/api/models/${modelId}`, {
+      const response = await fetch(`/api/models/${modelId}/file`, { // Corrected URL
         method: "POST",
         body: formData,
       });
@@ -128,6 +122,31 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (error) {
       console.error("Error updating file:", error);
+    }
+    event.target.value = null;
+  };
+
+  // Added for USDZ upload
+  const handleUpdateUsdzUpload = async (event) => {
+    const modelId = event.target.dataset.modelIdForUpdate;
+    const file = event.target.files[0];
+    if (!file || !modelId) return;
+    const formData = new FormData();
+    formData.append("usdzFile", file);
+    try {
+      const response = await fetch(`/api/models/${modelId}/usdz`, {
+        method: "POST",
+        body: formData,
+      });
+      if (response.ok) {
+        alert("USDZ file updated successfully!");
+        fetchAndDisplayModels(searchInput.value.trim());
+      } else {
+        const errorData = await response.json();
+        alert(`USDZ update failed: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Error updating USDZ file:", error);
     }
     event.target.value = null;
   };
@@ -175,6 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
   newModelBtn.addEventListener("click", () => newModelInput.click());
   newModelInput.addEventListener("change", handleNewModelUpload);
   updateModelInput.addEventListener("change", handleUpdateModelUpload);
+  updateUsdzInput.addEventListener("change", handleUpdateUsdzUpload); // Added
 
   searchBtn.addEventListener("click", () => {
     fetchAndDisplayModels(searchInput.value.trim());
@@ -197,21 +217,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (target.classList.contains("view-btn")) {
       const modelPath = target.dataset.path;
       const modelTitle = target.dataset.title;
-      window.location.href = `/viewer.html?model=${encodeURIComponent(
-        modelPath
-      )}&title=${modelTitle}`;
+      window.location.href = `/viewer.html?model=${encodeURIComponent(modelPath)}&title=${modelTitle}`;
     } else if (target.classList.contains("ar-btn")) {
-      const modelPath = target.dataset.path;
-      const modelTitle = target.dataset.title;
-      window.open(
-        `/ar-viewer.html?model=${encodeURIComponent(
-          modelPath
-        )}&title=${modelTitle}`,
-        "_blank"
-      );
+      // AR button now just needs the ID
+      window.open(`/ar-viewer.html?id=${modelId}`, "_blank");
     } else if (target.classList.contains("model-update-btn")) {
       updateModelInput.dataset.modelIdForUpdate = modelId;
       updateModelInput.click();
+    } else if (target.classList.contains("usdz-update-btn")) { // Added
+      updateUsdzInput.dataset.modelIdForUpdate = modelId;
+      updateUsdzInput.click();
     } else if (target.classList.contains("title-update-btn")) {
       const currentTitle = target.dataset.title;
       handleTitleUpdate(modelId, currentTitle);

@@ -134,6 +134,25 @@ app.put('/api/models/:id/title', (req, res) => {
     });
 });
 
+// POST (update) an existing model's usdz file
+app.post('/api/models/:id/usdz', upload.single('usdzFile'), (req, res) => {
+    const { id } = req.params;
+    if (!req.file) {
+        return res.status(400).json({ error: 'No usdz file uploaded for update.' });
+    }
+    const relativePath = path.join('models', req.file.filename);
+
+    db.run(`UPDATE models SET usdz_path = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`, [relativePath, id], function(err) {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        if (this.changes === 0) {
+            return res.status(404).json({ error: `Model with id ${id} not found.`});
+        }
+        res.json({ message: `Model ${id}'s usdz file updated successfully!`, usdz_path: relativePath });
+    });
+});
+
 
 // DELETE a model (soft delete)
 app.delete('/api/models/:id', (req, res) => {

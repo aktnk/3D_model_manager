@@ -4,7 +4,10 @@
 
 # Data, Logs, and Uploads
 /3d_models.sqlite
-/certs/
+# Ignore files within the certs directory...
+certs/*
+# ...but not the .gitkeep file, so the directory is tracked.
+!certs/.gitkeep
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

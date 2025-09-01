@@ -8,7 +8,6 @@ const viewerContainer = document.getElementById('viewer-container');
 
 // --- Scene Setup ---
 const scene = new THREE.Scene();
-
 const camera = new THREE.PerspectiveCamera(75, viewerContainer.clientWidth / viewerContainer.clientHeight, 0.1, 1000);
 camera.position.z = 5;
 
@@ -29,7 +28,7 @@ scene.add(directionalLight);
 
 // --- Controls ---
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.screenSpacePanning = false;
 controls.minDistance = 1;
@@ -38,38 +37,45 @@ controls.maxDistance = 500;
 // --- Model Loading & Title Display ---
 const loader = new GLTFLoader();
 const urlParams = new URLSearchParams(window.location.search);
-const modelPath = urlParams.get('model');
-const modelTitle = decodeURIComponent(urlParams.get('title') || 'Untitled');
+const modelId = urlParams.get('id');
 
-titleElement.textContent = modelTitle;
-
-if (modelPath) {
-    loader.load(
-        // resource URL
-        modelPath,
-        // called when the resource is loaded
-        function (gltf) {
-            // Center the model
-            const box = new THREE.Box3().setFromObject(gltf.scene);
-            const center = box.getCenter(new THREE.Vector3());
-            gltf.scene.position.sub(center); // center the model
-
-            scene.add(gltf.scene);
-        },
-        // called while loading is progressing
-        function (xhr) {
-            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-        },
-        // called when loading has errors
-        function (error) {
-            console.error('An error happened', error);
-            titleElement.textContent = 'Error loading model';
-            alert('Failed to load model. See console for details.');
+const loadModel = async (id) => {
+    try {
+        const response = await fetch(`/api/models/${id}`);
+        if (!response.ok) {
+            throw new Error('Model not found');
         }
-    );
+        const { model } = await response.json();
+
+        titleElement.textContent = model.title || 'Untitled';
+
+        loader.load(
+            model.file_path,
+            function (gltf) {
+                const box = new THREE.Box3().setFromObject(gltf.scene);
+                const center = box.getCenter(new THREE.Vector3());
+                gltf.scene.position.sub(center);
+                scene.add(gltf.scene);
+            },
+            (xhr) => console.log((xhr.loaded / xhr.total * 100) + '% loaded'),
+            (error) => {
+                console.error('An error happened', error);
+                titleElement.textContent = 'Error loading model';
+                alert('Failed to load model. See console for details.');
+            }
+        );
+    } catch (error) {
+        console.error('Failed to fetch model data:', error);
+        titleElement.textContent = 'Error: Model not found.';
+        alert('Failed to fetch model data.');
+    }
+};
+
+if (modelId) {
+    loadModel(modelId);
 } else {
     const errorMsg = 'No model specified!';
-    console.error('No model path specified in URL');
+    console.error('No model ID specified in URL');
     titleElement.textContent = errorMsg;
     alert(errorMsg);
 }
@@ -77,7 +83,7 @@ if (modelPath) {
 // --- Animation Loop ---
 function animate() {
     requestAnimationFrame(animate);
-    controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+    controls.update();
     renderer.render(scene, camera);
 }
 animate();

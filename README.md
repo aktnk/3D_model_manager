@@ -5,11 +5,11 @@ A simple web application for uploading, managing, and viewing 3D models, built w
 ## Features
 
 - **Model Upload**: Upload 3D models in `.glb` and `.gltf` formats.
-- **Cross-Platform AR**: View your models in Augmented Reality directly in the browser on both Android (WebXR) and iOS (AR Quick Look). Requires a compatible mobile device.
-- **USDZ Support**: Upload a `.usdz` file for each model to ensure a stable and high-quality AR experience on iOS devices.
-- **Interactive 3D Viewer**: View models in an interactive WebGL canvas powered by Three.js. Rotate, pan, and zoom with mouse controls.
-- **Full CRUD Operations**: Create, Read, Update, and Delete models.
-  - **Granular Updates**: Independently update the main model file (`.glb`), the AR model file (`.usdz`), and the title.
+- **Responsive List View**: Displays all registered models in a responsive card grid. Each card features an interactive 3D preview of the model.
+- **Web-based AR**: View 3D models in Augmented Reality directly from your browser on compatible iOS and Android devices.
+- **Interactive 3D Viewer**: View models in an interactive WebGL canvas. Rotate, pan, and zoom with mouse controls.
+- **CRUD Operations**: Full Create, Read, Update, and Delete functionality for models.
+  - **Granular Updates**: Update the 3D model file and its title independently.
   - **Soft Deletes**: Models are marked as deleted without being permanently removed from the database.
 - **Title Search**: Quickly find models by searching for their titles.
 
@@ -48,6 +48,7 @@ This project is configured to run in a Docker container, providing a consistent 
     **Note:** If you need to test from a mobile device, replace `CN=localhost` with your computer's local IP address (e.g., `CN=192.168.1.10`).
 
 3.  **Build and start the container:**
+    Run the following command from the project's root directory. This will build the Docker image and start the application in the background.
 
     ```bash
     docker compose up -d --build

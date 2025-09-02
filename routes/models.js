@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const repository = require('../models.repository.js');
+const repository = require('../data/models.repository.js');
 
 // --- Multer Setup ---
 const storage = multer.diskStorage({

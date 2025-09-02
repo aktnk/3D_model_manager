@@ -5,11 +5,11 @@ A simple web application for uploading, managing, and viewing 3D models, built w
 ## Features
 
 - **Model Upload**: Upload 3D models in `.glb` and `.gltf` formats.
-- **Responsive List View**: Displays all registered models in a responsive card grid. Each card features an interactive 3D preview of the model.
+- **Optimized List View**: Displays models in a responsive card grid. To ensure high performance, the list view prioritizes showing a lightweight PNG/JPEG thumbnail. If no thumbnail is available, it falls back to an interactive 3D preview using `<model-viewer>`.
 - **Web-based AR**: View 3D models in Augmented Reality directly from your browser on compatible iOS and Android devices.
 - **Interactive 3D Viewer**: View models in an interactive WebGL canvas. Rotate, pan, and zoom with mouse controls.
 - **CRUD Operations**: Full Create, Read, Update, and Delete functionality for models.
-  - **Granular Updates**: Update the 3D model file and its title independently.
+  - **Granular Updates**: Update the 3D model file, title, and thumbnail image independently.
   - **Soft Deletes**: Models are marked as deleted without being permanently removed from the database.
 - **Title Search**: Quickly find models by searching for their titles.
 

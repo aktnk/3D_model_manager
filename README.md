@@ -38,24 +38,15 @@ This project is configured to run in a Docker container, providing a consistent 
     cd 3D_model_manager
     ```
 
-2.  **Generate SSL Certificate for HTTPS:**
-    To test the AR functionality, a secure (HTTPS) connection is required. Generate a self-signed certificate by running the following command in the project root.
-
-    ```bash
-    openssl req -x509 -newkey rsa:2048 -nodes -keyout certs/server.key -out certs/server.crt -days 365 -subj "/C=JP/ST=Tokyo/L=Tokyo/O=Dev/CN=localhost"
-    ```
-
-    **Note:** If you need to test from a mobile device, replace `CN=localhost` with your computer's local IP address (e.g., `CN=192.168.1.10`).
-
-3.  **Build and start the container:**
+2.  **Build and start the container:**
     Run the following command from the project's root directory. This will build the Docker image and start the application in the background.
 
     ```bash
     docker compose up -d --build
     ```
 
-4.  **Open the application:**
-    Navigate to [https://localhost:3000](https://localhost:3000). Your browser will show a privacy warning; you must accept it to proceed.
+3.  **Open the application:**
+    Navigate to [http://localhost:3000](http://localhost:3000).
 
     ![image of index.html](sample/index.png)
     ![image of viewer.html](sample/viewer.png)
@@ -73,10 +64,9 @@ This project is configured to run in a Docker container, providing a consistent 
 
 If you have trouble viewing a model in AR, please check the following:
 
-1.  **Are you using HTTPS?** The AR feature will not work over an insecure HTTP connection.
-2.  **Is your device compatible?** Your phone must support ARCore (Android) or ARKit (iOS).
-3.  **Is the model file size optimized?** For best performance on mobile devices, model files should ideally be under 5MB. Very large models may fail to load in AR.
-4.  **(For iOS) Is there a `.usdz` file?** While not always required, providing a `.usdz` version of your model is the most reliable way to ensure AR works on iPhones and iPads.
+1.  **Is your device compatible?** Your phone must support ARCore (Android) or ARKit (iOS).
+2.  **Is the model file size optimized?** For best performance on mobile devices, model files should ideally be under 5MB. Very large models may fail to load in AR.
+3.  **(For iOS) Is there a `.usdz` file?** While not always required, providing a `.usdz` version of your model is the most reliable way to ensure AR works on iPhones and iPads.
 
 ## License
 

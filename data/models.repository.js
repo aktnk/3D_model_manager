@@ -114,6 +114,22 @@ function remove(id) {
     });
 }
 
+function updateThumbnailPath(id, thumbnailPath) {
+    return new Promise((resolve, reject) => {
+        db.run(
+            `UPDATE models SET thumbnail_path = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+            [thumbnailPath, id],
+            function (err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(this.changes);
+                }
+            }
+        );
+    });
+}
+
 
 module.exports = {
   getAll,
@@ -123,4 +139,5 @@ module.exports = {
   updateTitle,
   updateUsdz,
   remove,
+  updateThumbnailPath,
 };

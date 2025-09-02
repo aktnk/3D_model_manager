@@ -42,21 +42,29 @@ document.addEventListener("DOMContentLoaded", () => {
           imageContainer.style.cursor = "pointer";
           imageContainer.dataset.id = model.id;
 
-          // --- Create Model Viewer ---
-          const modelViewer = document.createElement("model-viewer");
-          modelViewer.src = model.file_path;
-          modelViewer.alt = currentTitle;
-          modelViewer.cameraControls = true;
-          modelViewer.disableZoom = true;
-          modelViewer.shadowIntensity = 1;
-          // Re-enable lazy loading for performance
-          modelViewer.loading = "lazy";
-          // modelViewer.reveal = "interaction"; // Keep this commented out
-          modelViewer.style.width = "100%";
-          modelViewer.style.height = "100%";
-          modelViewer.style.backgroundColor = "#343a40";
-
-          imageContainer.appendChild(modelViewer);
+          // --- Create Thumbnail or Model Viewer ---
+          if (model.thumbnail_path) {
+            const thumbnail = document.createElement('img');
+            thumbnail.src = model.thumbnail_path;
+            thumbnail.alt = currentTitle;
+            thumbnail.className = 'card-img-top'; // Use Bootstrap class for responsive images
+            thumbnail.style.width = '100%';
+            thumbnail.style.height = '100%';
+            thumbnail.style.objectFit = 'cover'; // Ensure the image covers the area
+            imageContainer.appendChild(thumbnail);
+          } else {
+            const modelViewer = document.createElement("model-viewer");
+            modelViewer.src = model.file_path;
+            modelViewer.alt = currentTitle;
+            modelViewer.cameraControls = true;
+            modelViewer.disableZoom = true;
+            modelViewer.shadowIntensity = 1;
+            modelViewer.loading = "lazy";
+            modelViewer.style.width = "100%";
+            modelViewer.style.height = "100%";
+            modelViewer.style.backgroundColor = "#343a40";
+            imageContainer.appendChild(modelViewer);
+          }
 
           // --- Create Card Body (as click trigger) ---
           const cardBody = document.createElement("div");

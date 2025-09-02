@@ -5,6 +5,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // --- DOM Elements ---
 const titleElement = document.getElementById('model-title');
 const viewerContainer = document.getElementById('viewer-container');
+const thumbnailPreview = document.getElementById('thumbnail-preview');
+const uploadThumbnailBtn = document.getElementById('upload-thumbnail-btn');
+const thumbnailFileInput = document.getElementById('thumbnail-file-input');
 
 // --- Scene Setup ---
 const scene = new THREE.Scene();
@@ -49,8 +52,14 @@ const loadModel = async (id) => {
 
         titleElement.textContent = model.title || 'Untitled';
 
+        // Display thumbnail if it exists
+        if (model.thumbnail_path) {
+            thumbnailPreview.src = `/${model.thumbnail_path}`;
+            thumbnailPreview.style.display = 'block';
+        }
+
         loader.load(
-            model.file_path,
+            `/${model.file_path}`,
             function (gltf) {
                 const box = new THREE.Box3().setFromObject(gltf.scene);
                 const center = box.getCenter(new THREE.Vector3());
@@ -70,6 +79,41 @@ const loadModel = async (id) => {
         alert('Failed to fetch model data.');
     }
 };
+
+// --- Thumbnail Upload --- 
+const handleThumbnailUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('thumbnailFile', file);
+
+    try {
+        const response = await fetch(`/api/models/${modelId}/thumbnail`, {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            alert('Thumbnail updated successfully!');
+            // Update the preview image
+            thumbnailPreview.src = `/${data.thumbnail_path}`;
+            thumbnailPreview.style.display = 'block';
+        } else {
+            const errorData = await response.json();
+            alert(`Upload failed: ${errorData.error}`);
+        }
+    } catch (error) {
+        console.error('Error uploading thumbnail:', error);
+        alert('An error occurred during upload.');
+    }
+};
+
+// --- Event Listeners ---
+uploadThumbnailBtn.addEventListener('click', () => thumbnailFileInput.click());
+thumbnailFileInput.addEventListener('change', handleThumbnailUpload);
+
 
 if (modelId) {
     loadModel(modelId);

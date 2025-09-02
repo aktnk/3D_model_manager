@@ -1,4 +1,3 @@
-
 const sqlite3 = require('sqlite3').verbose();
 const DB_PATH = './3d_models.sqlite';
 
@@ -17,7 +16,8 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
             title TEXT,
             original_name TEXT NOT NULL,
             file_path TEXT NOT NULL,
-            usdz_path TEXT, -- Add usdz_path column
+            usdz_path TEXT,
+            thumbnail_path TEXT, -- Add thumbnail_path column
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT NULL,
             is_deleted INTEGER DEFAULT 0
@@ -55,6 +55,14 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
                     console.log('Adding "usdz_path" column to models table.');
                     db.run("ALTER TABLE models ADD COLUMN usdz_path TEXT", (err) => {
                         if (err) return console.error("Error adding usdz_path column", err.message);
+                    });
+                }
+
+                // Check for 'thumbnail_path' column
+                if (!columnNames.includes('thumbnail_path')) {
+                    console.log('Adding "thumbnail_path" column to models table.');
+                    db.run("ALTER TABLE models ADD COLUMN thumbnail_path TEXT", (err) => {
+                        if (err) return console.error("Error adding thumbnail_path column", err.message);
                     });
                 }
             });

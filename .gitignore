@@ -1,4 +1,3 @@
-
 # Dependencies
 /node_modules
 
@@ -18,3 +17,7 @@ GEMINI.md
 /public/models/*
 # ...but keep the directory structure by not ignoring .gitkeep
 !/public/models/.gitkeep
+
+# User-uploaded thumbnails
+/public/thumbnails/*
+!/public/thumbnails/.gitkeep

@@ -4,12 +4,45 @@ document.addEventListener("DOMContentLoaded", () => {
   const newModelBtn = document.getElementById("new-model-btn");
   const newModelInput = document.getElementById("new-model-input");
   const updateModelInput = document.getElementById("update-model-input");
-  const updateUsdzInput = document.getElementById("update-usdz-input"); // Added
+  const updateUsdzInput = document.getElementById("update-usdz-input");
   const searchInput = document.getElementById("search-input");
   const searchBtn = document.getElementById("search-btn");
   const clearSearchBtn = document.getElementById("clear-search-btn");
 
+  // --- Constants ---
+  const PREFERENCE_KEY_PREFIX = "display-preference-";
+
   // --- Functions ---
+
+  const createThumbnailElement = (model, preference) => {
+    const currentTitle = model.title || "N/A";
+    // Default to 'image' if thumbnail exists and no preference is set
+    const view =
+      preference || (model.thumbnail_path ? "image" : "3d");
+
+    if (view === "3d" || !model.thumbnail_path) {
+      const modelViewer = document.createElement("model-viewer");
+      modelViewer.src = model.file_path;
+      modelViewer.alt = currentTitle;
+      modelViewer.cameraControls = true;
+      modelViewer.disableZoom = true;
+      modelViewer.shadowIntensity = 1;
+      modelViewer.loading = "lazy";
+      modelViewer.style.width = "100%";
+      modelViewer.style.height = "100%";
+      modelViewer.style.backgroundColor = "#343a40";
+      return modelViewer;
+    } else {
+      const thumbnail = document.createElement("img");
+      thumbnail.src = model.thumbnail_path;
+      thumbnail.alt = currentTitle;
+      thumbnail.className = "card-img-top";
+      thumbnail.style.width = "100%";
+      thumbnail.style.height = "100%";
+      thumbnail.style.objectFit = "cover";
+      return thumbnail;
+    }
+  };
 
   const fetchAndDisplayModels = async (searchTerm = "") => {
     try {
@@ -25,115 +58,96 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.models && data.models.length > 0) {
         data.models.forEach((model) => {
           const currentTitle = model.title || "N/A";
-          const usdzPath = model.usdz_file_path || "";
+          const preference = localStorage.getItem(PREFERENCE_KEY_PREFIX + model.id);
+          const currentView = preference || (model.thumbnail_path ? "image" : "3d");
 
-          // --- Create Column ---
           const col = document.createElement("div");
           col.className = "col-6 col-md-4 col-lg-3 col-xl-2 mb-4";
+          col.dataset.modelId = model.id; // Add model-id to the column for easier targeting
 
-          // --- Create Card ---
           const card = document.createElement("div");
           card.className = "card text-white bg-dark h-100 model-card";
 
-          // --- Create Image Container (as click trigger) ---
           const imageContainer = document.createElement("div");
-          imageContainer.className = "card-img-top view-trigger";
+          imageContainer.className = "card-img-top-container"; // Renamed for clarity
           imageContainer.style.height = "150px";
-          imageContainer.style.cursor = "pointer";
-          imageContainer.dataset.id = model.id;
+          
+          // Add a wrapper for the view trigger to separate it from the content
+          const viewTrigger = document.createElement('div');
+          viewTrigger.className = 'view-trigger';
+          viewTrigger.style.cursor = 'pointer';
+          viewTrigger.style.height = '100%';
+          viewTrigger.dataset.id = model.id;
 
-          // --- Create Thumbnail or Model Viewer ---
+          const thumbnailElement = createThumbnailElement(model, preference);
+          viewTrigger.appendChild(thumbnailElement);
+          imageContainer.appendChild(viewTrigger);
+
+          const cardBody = document.createElement("div");
+          const cardBodyContent = document.createElement('div'); // Wrapper for non-clickable area
+          cardBody.className = "card-body d-flex flex-column";
+          
+          cardBodyContent.innerHTML = `
+            <h6 class="card-title text-truncate">${currentTitle}</h6>
+            <p class="card-text small text-muted text-truncate">${model.original_name}</p>
+          `;
+
+          const cardFooter = document.createElement("div");
+          cardFooter.className = "card-footer d-flex justify-content-end align-items-center mt-auto";
+
+          // --- View Toggle Button ---
+          const toggleBtn = document.createElement("button");
           if (model.thumbnail_path) {
-            const thumbnail = document.createElement('img');
-            thumbnail.src = model.thumbnail_path;
-            thumbnail.alt = currentTitle;
-            thumbnail.className = 'card-img-top'; // Use Bootstrap class for responsive images
-            thumbnail.style.width = '100%';
-            thumbnail.style.height = '100%';
-            thumbnail.style.objectFit = 'cover'; // Ensure the image covers the area
-            imageContainer.appendChild(thumbnail);
+            toggleBtn.className = "btn btn-sm btn-outline-secondary me-auto toggle-view-btn";
+            toggleBtn.innerHTML = currentView === '3d' ? '<i class="bi bi-image"></i>' : '<i class="bi bi-box"></i>';
+            toggleBtn.dataset.modelId = model.id;
+            toggleBtn.dataset.filePath = model.file_path;
+            toggleBtn.dataset.thumbnailPath = model.thumbnail_path;
+            cardFooter.appendChild(toggleBtn);
           } else {
-            const modelViewer = document.createElement("model-viewer");
-            modelViewer.src = model.file_path;
-            modelViewer.alt = currentTitle;
-            modelViewer.cameraControls = true;
-            modelViewer.disableZoom = true;
-            modelViewer.shadowIntensity = 1;
-            modelViewer.loading = "lazy";
-            modelViewer.style.width = "100%";
-            modelViewer.style.height = "100%";
-            modelViewer.style.backgroundColor = "#343a40";
-            imageContainer.appendChild(modelViewer);
+            // Add a placeholder to keep alignment consistent
+            const placeholder = document.createElement('div');
+            placeholder.className = 'me-auto';
+            cardFooter.appendChild(placeholder);
           }
 
-          // --- Create Card Body (as click trigger) ---
-          const cardBody = document.createElement("div");
-          cardBody.className = "card-body view-trigger";
-          cardBody.dataset.id = model.id;
-
-          const cardTitle = document.createElement("h6");
-          cardTitle.className = "card-title text-truncate";
-          cardTitle.textContent = currentTitle;
-
-          const cardText = document.createElement("p");
-          cardText.className = "card-text small text-muted text-truncate";
-          cardText.textContent = model.original_name;
-
-          cardBody.appendChild(cardTitle);
-          cardBody.appendChild(cardText);
-
-          // --- Create Card Footer ---
-          const cardFooter = document.createElement("div");
-          cardFooter.className = "card-footer d-flex justify-content-end";
 
           const arButton = document.createElement("button");
-          arButton.className = "btn btn-sm btn-light me-2 ar-btn";
+          arButton.className = "btn btn-sm btn-light ms-2 ar-btn";
           arButton.textContent = "AR";
           arButton.dataset.id = model.id;
 
           const dropdownDiv = document.createElement("div");
-          dropdownDiv.className = "dropdown";
+          dropdownDiv.className = "dropdown ms-2";
 
-          const dropdownButton = document.createElement("button");
-          dropdownButton.className = "btn btn-sm btn-secondary dropdown-toggle";
-          dropdownButton.type = "button";
-          dropdownButton.setAttribute("data-bs-toggle", "dropdown");
-          dropdownButton.setAttribute("aria-expanded", "false");
-          dropdownButton.textContent = "...";
-
-          const dropdownMenu = document.createElement("ul");
-          dropdownMenu.className = "dropdown-menu dropdown-menu-dark";
-
-          dropdownMenu.innerHTML = `
-            <li><a class="dropdown-item title-update-btn" href="#" data-id="${model.id}" data-title="${currentTitle}">Edit Title</a></li>
-            <li><a class="dropdown-item model-update-btn" href="#" data-id="${model.id}">Update Model</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item delete-btn" href="#" data-id="${model.id}">Delete</a></li>
+          dropdownDiv.innerHTML = `
+            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">...</button>
+            <ul class="dropdown-menu dropdown-menu-dark">
+              <li><a class="dropdown-item title-update-btn" href="#" data-id="${model.id}" data-title="${currentTitle}">Edit Title</a></li>
+              <li><a class="dropdown-item model-update-btn" href="#" data-id="${model.id}">Update Model</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item delete-btn" href="#" data-id="${model.id}">Delete</a></li>
+            </ul>
           `;
-
-          dropdownDiv.appendChild(dropdownButton);
-          dropdownDiv.appendChild(dropdownMenu);
-
+          
+          cardBody.appendChild(cardBodyContent);
           cardFooter.appendChild(arButton);
           cardFooter.appendChild(dropdownDiv);
-
-          // --- Assemble Card ---
+          
           card.appendChild(imageContainer);
           card.appendChild(cardBody);
           card.appendChild(cardFooter);
 
-          // --- Append to Column and Container ---
           col.appendChild(card);
           modelListContainer.appendChild(col);
         });
 
-        // Initialize dropdowns for the newly created cards
         const dropdownElementList = [].slice.call(
           modelListContainer.querySelectorAll(".dropdown-toggle")
         );
-        dropdownElementList.map(function (dropdownToggleEl) {
-          return new bootstrap.Dropdown(dropdownToggleEl);
-        });
+        dropdownElementList.map(
+          (dropdownToggleEl) => new bootstrap.Dropdown(dropdownToggleEl)
+        );
       } else {
         modelListContainer.innerHTML =
           '<div class="col"><p class="text-light">No models found.</p></div>';
@@ -183,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("modelFile", file);
     try {
       const response = await fetch(`/api/models/${modelId}`, {
-        method: "POST", // This should likely be PUT or PATCH in a real app
+        method: "POST",
         body: formData,
       });
       if (response.ok) {
@@ -199,7 +213,6 @@ document.addEventListener("DOMContentLoaded", () => {
     event.target.value = null;
   };
 
-  // Added for USDZ upload
   const handleUpdateUsdzUpload = async (event) => {
     const modelId = event.target.dataset.modelIdForUpdate;
     const file = event.target.files[0];
@@ -267,7 +280,7 @@ document.addEventListener("DOMContentLoaded", () => {
   newModelBtn.addEventListener("click", () => newModelInput.click());
   newModelInput.addEventListener("change", handleNewModelUpload);
   updateModelInput.addEventListener("change", handleUpdateModelUpload);
-  updateUsdzInput.addEventListener("change", handleUpdateUsdzUpload); // Added
+  updateUsdzInput.addEventListener("change", handleUpdateUsdzUpload);
 
   searchBtn.addEventListener("click", () => {
     fetchAndDisplayModels(searchInput.value.trim());
@@ -286,46 +299,62 @@ document.addEventListener("DOMContentLoaded", () => {
 
   modelListContainer.addEventListener("click", (event) => {
     const target = event.target;
-    const modelId = target.dataset.id;
+    const button = target.closest("button, a"); // More robust target finding
 
-    // --- Card click to view model ---
-    const viewTrigger = target.closest(".view-trigger");
-    if (viewTrigger) {
-      const id = viewTrigger.dataset.id;
-      const path = viewTrigger.dataset.path;
-      const usdzPath = viewTrigger.dataset.usdzPath;
-      const title = viewTrigger.dataset.title;
-      window.location.href = `/viewer.html?id=${id}`;
-      return; // Stop further processing
+    if (!button) {
+        // If the click is on the card body for viewing, handle it
+        const viewTrigger = target.closest(".view-trigger");
+        if (viewTrigger) {
+            const id = viewTrigger.dataset.id;
+            window.location.href = `/viewer.html?id=${id}`;
+        }
+        return;
     }
 
-    // --- Button clicks ---
-    if (target.classList.contains("ar-btn")) {
-      const id = target.dataset.id;
-      window.location.href = `/ar-viewer.html?id=${id}`;
-    } else if (target.classList.contains("model-update-btn")) {
+    const modelId = button.dataset.id || button.closest('[data-model-id]')?.dataset.modelId;
+
+    if (button.closest(".toggle-view-btn")) {
+        const toggleBtn = button.closest(".toggle-view-btn");
+        const modelId = toggleBtn.dataset.modelId;
+        const preferenceKey = PREFERENCE_KEY_PREFIX + modelId;
+        const currentPreference = localStorage.getItem(preferenceKey) || 'image';
+        const newPreference = currentPreference === 'image' ? '3d' : 'image';
+        localStorage.setItem(preferenceKey, newPreference);
+
+        // --- Replace the card's thumbnail content ---
+        const col = toggleBtn.closest(".col-6");
+        const imageContainer = col.querySelector(".card-img-top-container .view-trigger");
+        
+        const model = {
+            id: modelId,
+            file_path: toggleBtn.dataset.filePath,
+            thumbnail_path: toggleBtn.dataset.thumbnailPath,
+            title: col.querySelector('.card-title').textContent
+        };
+
+        const newThumbnailElement = createThumbnailElement(model, newPreference);
+        imageContainer.innerHTML = ''; // Clear old content
+        imageContainer.appendChild(newThumbnailElement);
+
+        // --- Update button icon ---
+        toggleBtn.innerHTML = newPreference === '3d' ? '<i class="bi bi-image"></i>' : '<i class="bi bi-box"></i>';
+
+    } else if (button.classList.contains("ar-btn")) {
+      window.location.href = `/ar-viewer.html?id=${modelId}`;
+    } else if (button.classList.contains("model-update-btn")) {
       updateModelInput.dataset.modelIdForUpdate = modelId;
       updateModelInput.click();
-    } else if (target.classList.contains("usdz-update-btn")) {
-      // Added
+    } else if (button.classList.contains("usdz-update-btn")) {
       updateUsdzInput.dataset.modelIdForUpdate = modelId;
       updateUsdzInput.click();
-    } else if (target.classList.contains("title-update-btn")) {
-      const currentTitle = target.dataset.title;
+    } else if (button.classList.contains("title-update-btn")) {
+      const currentTitle = button.dataset.title;
       handleTitleUpdate(modelId, currentTitle);
-    } else if (target.classList.contains("delete-btn")) {
+    } else if (button.classList.contains("delete-btn")) {
       handleDeleteModel(modelId);
     }
   });
 
   // --- Initial Load ---
   fetchAndDisplayModels();
-
-  // Bootstrap dropdown initialization
-  const dropdownElementList = [].slice.call(
-    document.querySelectorAll(".dropdown-toggle")
-  );
-  const dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
-    return new bootstrap.Dropdown(dropdownToggleEl);
-  });
 });

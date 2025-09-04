@@ -69,6 +69,10 @@ If you have trouble viewing a model in AR, please check the following:
 2.  **Is the model file size optimized?** For best performance on mobile devices, model files should ideally be under 5MB. Very large models may fail to load in AR.
 3.  **(For iOS) Is there a `.usdz` file?** While not always required, providing a `.usdz` version of your model is the most reliable way to ensure AR works on iPhones and iPads.
 
+## Acknowledgements
+
+The "Astronaut" 3D model used in the screenshots is provided by Poly by Google via [modelviewer.dev](https://modelviewer.dev/shared-assets/models/Astronaut.glb) and is licensed under [CC-BY](https://creativecommons.org/licenses/by/3.0/).
+
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.

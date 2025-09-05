@@ -16,6 +16,7 @@ A simple web application for uploading, managing, and viewing 3D models, built w
 ## Tech Stack
 
 - **Backend**: Node.js, Express.js
+- **Reverse Proxy**: Nginx
 - **Frontend**: Bootstrap 5, Bootstrap Icons
 - **Database**: SQLite
 - **File Uploads**: Multer
@@ -23,7 +24,7 @@ A simple web application for uploading, managing, and viewing 3D models, built w
 
 ## Getting Started with Docker
 
-This project is configured to run in a Docker container, providing a consistent and isolated development environment.
+This project runs in a containerized environment using Docker Compose, with an Nginx container acting as a reverse proxy for the Node.js application. This setup provides a consistent and isolated development environment.
 
 ### Prerequisites
 
@@ -39,15 +40,15 @@ This project is configured to run in a Docker container, providing a consistent 
     cd 3D_model_manager
     ```
 
-2.  **Build and start the container:**
-    Run the following command from the project's root directory. This will build the Docker image and start the application in the background.
+2.  **Build and start the containers:**
+    Run the following command from the project's root directory. This will build the Docker image and start the Nginx and application containers in the background.
 
     ```bash
     docker compose up -d --build
     ```
 
 3.  **Open the application:**
-    Navigate to [http://localhost:3000](http://localhost:3000).
+    Navigate to [http://localhost:8080](http://localhost:8080).
 
     ![image of index.html](sample/index.png)
     ![image of viewer.html](sample/viewer.png)

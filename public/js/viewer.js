@@ -47,10 +47,28 @@ const loader = new GLTFLoader();
 const urlParams = new URLSearchParams(window.location.search);
 const modelId = urlParams.get("id");
 
+const handleLoadError = (message) => {
+  titleElement.textContent = "Error: Model not found.";
+  // Remove the Three.js canvas
+  while (viewerContainer.firstChild) {
+    viewerContainer.removeChild(viewerContainer.firstChild);
+  }
+  // Display error message in the viewer container
+  const errorDiv = document.createElement("div");
+  errorDiv.className = "text-center text-white-50 p-5";
+  errorDiv.innerHTML = `
+    <p><i class="bi bi-exclamation-triangle-fill" style="font-size: 3rem;"></i></p>
+    <p>${message}</p>
+    <a href="/" class="btn btn-secondary">モデル一覧に戻る</a>
+  `;
+  viewerContainer.appendChild(errorDiv);
+};
+
 const loadModel = async (id) => {
   try {
     const response = await fetch(`/api/models/${id}`);
     if (!response.ok) {
+      // Even if the server gives a specific error, we'll use a generic "not found" for the user.
       throw new Error("Model not found");
     }
     const { model } = await response.json();
@@ -73,15 +91,15 @@ const loadModel = async (id) => {
       },
       (xhr) => console.log((xhr.loaded / xhr.total) * 100 + "% loaded"),
       (error) => {
-        console.error("An error happened", error);
-        titleElement.textContent = "Error loading model";
-        alert("Failed to load model. See console for details.");
+        console.error("An error happened during model loading:", error);
+        handleLoadError("モデルの読み込みに失敗しました。");
       }
     );
   } catch (error) {
     console.error("Failed to fetch model data:", error);
-    titleElement.textContent = "Error: Model not found.";
-    alert("Failed to fetch model data.");
+    handleLoadError(
+      "指定されたIDのモデルは存在しないか、削除された可能性があります。<br>IDを確認して再読み込みするか、一覧に戻ってください。"
+    );
   }
 };
 
@@ -122,10 +140,7 @@ thumbnailFileInput.addEventListener("change", handleThumbnailUpload);
 if (modelId) {
   loadModel(modelId);
 } else {
-  const errorMsg = "No model specified!";
-  console.error("No model ID specified in URL");
-  titleElement.textContent = errorMsg;
-  alert(errorMsg);
+  handleLoadError("モデルIDが指定されていません。");
 }
 
 // --- Animation Loop ---

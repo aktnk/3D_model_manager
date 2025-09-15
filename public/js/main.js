@@ -146,7 +146,12 @@ document.addEventListener("DOMContentLoaded", () => {
           modelListContainer.querySelectorAll(".dropdown-toggle")
         );
         dropdownElementList.map(
-          (dropdownToggleEl) => new bootstrap.Dropdown(dropdownToggleEl)
+          (dropdownToggleEl) =>
+            new bootstrap.Dropdown(dropdownToggleEl, {
+              popperConfig: {
+                strategy: "fixed",
+              },
+            })
         );
       } else {
         modelListContainer.innerHTML =
@@ -309,6 +314,11 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = `/viewer.html?id=${id}`;
         }
         return;
+    }
+
+    // ドロップダウン内のリンク(<a>)がクリックされた際のデフォルトの画面遷移を抑制
+    if (button.classList.contains("dropdown-item")) {
+      event.preventDefault();
     }
 
     const modelId = button.dataset.id || button.closest('[data-model-id]')?.dataset.modelId;

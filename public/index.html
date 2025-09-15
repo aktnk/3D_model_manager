@@ -4,12 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>3D Model Manager</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link
       rel="stylesheet"
       href="/node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
     <style>
       body {
         padding-top: 4.5rem;
@@ -42,7 +45,9 @@
   <body class="bg-dark">
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#"><i class="bi bi-boxes me-2"></i>3D Model Manager</a>
+        <a class="navbar-brand" href="#"
+          ><i class="bi bi-boxes me-2"></i>3D Model Manager</a
+        >
       </div>
     </nav>
 
@@ -51,10 +56,16 @@
         class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
       >
         <h1 class="h2">Model List</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-          <button type="button" id="new-model-btn" class="btn btn-success">
-            新規登録
-          </button>
+        <div class="d-flex align-items-center">
+          <p class="text-white-50 small mb-0 me-3">
+            <i class="bi bi-info-circle me-1"></i>
+            モデルは<strong class="text-white">.glb形式</strong>でアップロードしてください。
+          </p>
+          <div class="btn-toolbar">
+            <button type="button" id="new-model-btn" class="btn btn-success">
+              新規登録
+            </button>
+          </div>
         </div>
       </div>
 
@@ -75,13 +86,13 @@
         type="file"
         id="new-model-input"
         style="display: none"
-        accept=".gltf,.glb"
+        accept=".glb"
       />
       <input
         type="file"
         id="update-model-input"
         style="display: none"
-        accept=".gltf,.glb"
+        accept=".glb"
       />
       <input
         type="file"

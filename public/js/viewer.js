@@ -75,10 +75,21 @@ const loadModel = async (id) => {
 
     titleElement.textContent = model.title || "Untitled";
 
-    // Display thumbnail if it exists
+    // [XSS対策] Display thumbnail if it exists and the path is valid
     if (model.thumbnail_path) {
-      thumbnailPreview.src = `/${model.thumbnail_path}`;
-      thumbnailPreview.style.display = "block";
+      if (String(model.thumbnail_path).startsWith('thumbnails/')) {
+        thumbnailPreview.src = `/${model.thumbnail_path}`;
+        thumbnailPreview.style.display = "block";
+      } else {
+        console.error('Invalid thumbnail path detected:', model.thumbnail_path);
+      }
+    }
+
+    // [XSS対策] Validate model path before loading
+    if (!model.file_path || !String(model.file_path).startsWith('models/')) {
+        console.error('Invalid model file path detected:', model.file_path);
+        handleLoadError("モデルファイルのパスが不正です。");
+        return; // Stop execution if path is invalid
     }
 
     loader.load(
